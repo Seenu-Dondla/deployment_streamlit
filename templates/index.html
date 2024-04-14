@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glaucoma Detection</title>
+    <style>
+      .bgimg {
+        background-color: rgb(59, 60, 60);
+      }
+      .main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .heading {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        padding-top: 5%;
+        font-size: 30px;
+        color: rgb(255, 255, 255);
+      }
+
+      input[type="file"] {
+        padding: 20px;
+        background-color: #2d2d2dae;
+        border: 1px solid #868686;
+        border-radius: 5px;
+        color: #ffffff;
+        font-size: 20px;
+      }
+      .btn {
+        padding: 23px;
+        background-color: #2d2d2dae;
+        border: 1px solid #868686;
+        border-radius: 5px;
+        color: #fcfcfc;
+        font-size: 20px;
+      }
+      .btn:hover {
+        background-color: #3d464f;
+      }
+      .btn:active {
+        background-color: #2d2d2dae;
+      }
+      #result {
+        display: flex;
+        justify-content: center;
+        height: 300px;
+        font-size: 30px;
+        font-weight: bolder;
+        margin-top: 20px;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body class="bgimg">
+    <div class="main">
+      <div class="heading"><h1>Glaucoma Detection</h1></div>
+      <div class="ip">
+        <form
+          id="uploadForm"
+          action="/predict"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <input
+            type="file"
+            name="file"
+            id="fileInput"
+            accept=".png, .jpg, .jpeg"
+          />
+          <button type="submit" class="btn">Upload</button>
+        </form>
+      </div>
+    </div>
+    <div id="result"></div>
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          let formData = new FormData();
+          formData.append(
+            "file",
+            document.getElementById("fileInput").files[0]
+          );
+
+          try {
+            let response = await fetch("/predict", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Server Error");
+            }
+
+            let result = await response.json();
+            document.getElementById("result").innerText = result.result;
+          } catch (error) {
+            console.error(error);
+            document.getElementById("result").innerText =
+              "Error processing image. Please try again.";
+          }
+        });
+    </script>
+  </body>
+</html>
